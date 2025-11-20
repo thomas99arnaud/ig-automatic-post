@@ -1,6 +1,8 @@
 import os
 from openai import OpenAI
 
+import path
+
 # Assure-toi d'avoir défini OPENAI_API_KEY dans tes variables d'environnement
 client = OpenAI()
 
@@ -47,15 +49,15 @@ def generate_animal_script(animal: str) -> str:
 
     # Nouveau format de l’API Responses
     text = response.output[0].content[0].text
+    print("Script généré✅")
     return text.strip()
 
-def text_to_speech(text: str, out_path: str = "voice.mp3"):
+def text_to_speech(SUJET, text: str):
     """
     Transforme un texte en fichier audio (voix off).
     """
-    # Créer le dossier de sortie si besoin
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
+    out_path = path.VOICEOVER_PATH / f"{SUJET}.mp3"
     with open(out_path, "wb") as f:
         result = client.audio.speech.create(
             model="gpt-4o-mini-tts",  # modèle TTS
@@ -64,9 +66,8 @@ def text_to_speech(text: str, out_path: str = "voice.mp3"):
             speed=1.4
         )
         f.write(result.read())
-
+    print("Audio généré ✅")
     return out_path
-
 
 if __name__ == "__main__":
     # 1. Générer un script
@@ -76,5 +77,5 @@ if __name__ == "__main__":
     print("-" * 40)
 
     # 2. Générer la voix off
-    audio_path = text_to_speech(script_text, out_path="voiceovers/chat_1.mp3")
+    audio_path = text_to_speech("un chat", script_text)
     print("Audio généré :", audio_path)

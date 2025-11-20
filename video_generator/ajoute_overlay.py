@@ -1,5 +1,6 @@
 import re
 import numpy as np
+import path
 from moviepy import VideoFileClip, CompositeVideoClip, ImageClip
 from PIL import Image, ImageDraw, ImageFont
 
@@ -93,10 +94,11 @@ def render_sentence_image(
 
 
 def add_subtitles_colorful_animated(
-    video_path: str,
+    SUJET,
     text: str,
-    out_path: str = "reel_with_color_subs.mp4",
 ):
+
+    video_path = path.TEMPORARY_VIDEOS_PATH / f"{SUJET}_full.mp4"
     video = VideoFileClip(video_path)
 
     # Découper le texte en phrases
@@ -139,7 +141,9 @@ def add_subtitles_colorful_animated(
         clips.append(txt_clip)
 
     final = CompositeVideoClip([video, *clips])
+    out_path = path.VIDEOS_EDITED_PATH / f"{SUJET}.mp4"
     final.write_videofile(out_path, codec="libx264", audio_codec="aac")
+    print("Vidéo avec le son et les sous titres ✅")
     return out_path
 
 

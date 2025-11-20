@@ -1,6 +1,8 @@
 import requests
 import random
 import sys
+import path
+from path import TEMPORARY_VIDEOS_PATH
 import os
 from typing import List, Dict
 from moviepy import VideoFileClip, concatenate_videoclips
@@ -52,66 +54,84 @@ def pick_video_urls_for_reel(animal: str, n: int = 5):
     chosen = random.sample(all_videos, n)
     return [c["video_url"] for c in chosen]
 
-def download_video(url: str, out_dir: str = "videos") -> str:
-    os.makedirs(out_dir, exist_ok=True)
-    filename = url.split("?")[0].split("/")[-1]  # simple nom de fichier
-    filepath = os.path.join(out_dir, filename)
+def download_video(urls: str):
+    out_dir = path.TEMPORARY_VIDEOS_PATH
+    paths=[]
+    for url in urls :
+        filename = url.split("?")[0].split("/")[-1]  # simple nom de fichier
+        filepath = os.path.join(out_dir, filename)
 
-    if os.path.exists(filepath):
-        return filepath  # déjà téléchargée
+        if os.path.exists(filepath):
+            return filepath  # déjà téléchargée
 
-    r = requests.get(url, stream=True)
-    r.raise_for_status()
-    with open(filepath, "wb") as f:
-        for chunk in r.iter_content(chunk_size=8192):
-            if chunk:
-                f.write(chunk)
-    return filepath
+        r = requests.get(url, stream=True)
+        r.raise_for_status()
+        with open(filepath, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+        paths.append(filepath)
+    return paths
 
-def create_animal_base_reel(video_paths,  video_duration, clip_duration=2, out_path="reel_base.mp4"):
+def create_animal_base_reel(SUJET, video_paths,  video_duration, clip_duration=2):
+    out_path = TEMPORARY_VIDEOS_PATH/ f"{SUJET}.mp4" 
+
     clips = []
+    original_videos = []   # pour fermer les vidéos originales
+    try:
+        for path in video_paths:
+            video = VideoFileClip(path)
+            original_videos.append(video)
 
-    for path in video_paths:
-        video = VideoFileClip(path)
+            if video.duration <= clip_duration:
+                continue
 
-        # Si la vidéo est trop courte, on saute
-        if video.duration <= clip_duration:
-            continue
+            start = random.uniform(0, max(0, video.duration - clip_duration))
+            sub = video.subclipped(start, start + clip_duration)
 
-        # On choisit un point de départ aléatoire
-        start = random.uniform(0, max(0, video.duration - clip_duration))
-        sub = video.subclipped(start, start + clip_duration)
+            sub = sub.resized(height=1920)
+            w, h = sub.size
+            target_ratio = 9/16
+            current_ratio = w / h
 
-        # Option: forcer le format vertical 9:16
-        sub = sub.resized(height=1920)  # adapte selon ce que tu veux
-        w, h = sub.size
-        target_ratio = 9/16
-        current_ratio = w / h
+            if current_ratio > target_ratio:
+                new_width = int(h * target_ratio)
+                x_center = w // 2
+                x1 = x_center - new_width // 2
+                x2 = x_center + new_width // 2
+                sub = sub.cropped(x1=x1, x2=x2)
 
-        if current_ratio > target_ratio:
-            # trop large → on crop à 9:16
-            new_width = int(h * target_ratio)
-            x_center = w // 2
-            x1 = x_center - new_width // 2
-            x2 = x_center + new_width // 2
-            sub = sub.cropped(x1=x1, x2=x2)
+            clips.append(sub)
 
-        clips.append(sub)
+        if not clips:
+            raise ValueError("Aucun clip valide")
 
-        # if len(clips) == 5:
-        #     break
+        final = concatenate_videoclips(clips, method="compose")
+        final = final.with_duration(video_duration)
+        final.write_videofile(out_path, codec="libx264", audio_codec="aac")
 
-    if not clips:
-        raise ValueError("Aucun clip valide")
+        final.close()  # 🔴 IMPORTANT
+        print("Vidéo générée ✅")
+        return out_path
 
-    final = concatenate_videoclips(clips, method="compose")
-    final = final.with_duration(video_duration)
-    final.write_videofile(out_path, codec="libx264", audio_codec="aac")
+    finally:
+        # 🔴 Ferme tous les clips sous-clips
+        for c in clips:
+            try:
+                c.close()
+            except:
+                pass
 
-    return out_path
+        # 🔴 Ferme les vidéos originales
+        for v in original_videos:
+            try:
+                v.close()
+            except:
+                pass
+
 
 if __name__ == "__main__":
     urls = pick_video_urls_for_reel("cute cat", n=5)
     paths = [download_video(u) for u in urls]
-    reel_path = create_animal_base_reel(paths, clip_duration=2, out_path="./videos_edited/reel_chat.mp4")
+    reel_path = create_animal_base_reel("cute cat", paths, clip_duration=2,)
     print("Reel généré :", reel_path)
