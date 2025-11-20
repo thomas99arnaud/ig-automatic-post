@@ -7,6 +7,7 @@ import build_reel
 import pexel_pull_videos
 import pull_openai_text
 import utils
+import get_audio_timings
 
 def lanceur(SUJET, NOMBRE_DE_VIDEOS):
 
@@ -34,11 +35,15 @@ def lanceur(SUJET, NOMBRE_DE_VIDEOS):
 
     # Partie 3 - Build de la video avec le son
     final_reel = build_reel.add_voiceover_to_reel(SUJET)
+
+    # Partir 4 - Génère les timings du son 
+    timings = get_audio_timings.get_timings_from_audio(audio_path)
     
     # Partie 4 - Ajout de l'overlay
     reel_with_color = ajoute_overlay.add_subtitles_colorful_animated(
         SUJET,
-        script_text
+        script_text,
+        sentence_timings=timings,
     )
 
     # Partie 5 - Suppression des dossiers temporaires

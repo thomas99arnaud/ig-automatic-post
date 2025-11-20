@@ -92,34 +92,23 @@ def render_sentence_image(
 
     return np.array(img)
 
-
 def add_subtitles_colorful_animated(
-    SUJET,
-    text: str,
+    SUJET: str,
+    text: str,        # tu peux même le virer si tu ne l'utilises plus
+    sentence_timings, # liste: [(sentence, start, end), ...]
 ):
 
     video_path = path.TEMPORARY_VIDEOS_PATH / f"{SUJET}_full.mp4"
     video = VideoFileClip(video_path)
 
-    # Découper le texte en phrases
-    sentences = re.split(r'(?<=[\.\!\?…])\s+', text)
-    sentences = [s.strip() for s in sentences if s.strip()]
-
-    total_duration = video.duration
-    seg_duration = total_duration / len(sentences)
-
     clips = []
 
-    # Palette de couleurs pour le texte
     colors = ["#FFD60A", "#FF6B6B", "#4ECDC4", "#A66CFF", "#00B4D8"]
 
-    # Position verticale (~ 20% de la hauteur)
     top_y = int(video.h * 0.20)
     max_text_width = int(video.w * 0.8)
 
-    for i, sentence in enumerate(sentences):
-        start = i * seg_duration
-        end = start + seg_duration
+    for i, (sentence, start, end) in enumerate(sentence_timings):
         text_color_hex = colors[i % len(colors)]
 
         img_array = render_sentence_image(
@@ -143,8 +132,10 @@ def add_subtitles_colorful_animated(
     final = CompositeVideoClip([video, *clips])
     out_path = path.VIDEOS_EDITED_PATH / f"{SUJET}.mp4"
     final.write_videofile(out_path, codec="libx264", audio_codec="aac")
-    print("Vidéo avec le son et les sous titres ✅")
+
+    print("Vidéo avec le son et les sous titres synchronisés (Whisper) ✅")
     return out_path
+
 
 
 if __name__ == "__main__":
