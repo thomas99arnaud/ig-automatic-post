@@ -1,7 +1,7 @@
 import general
 import netlify_depolyment
 
-SUJET = "cat"
+SUJET = "dog"
 NOMBRE_DE_VIDEOS = 7
 langues = ["francais", "anglais", "espagnol", "portugais"]
 SUJETS = ["koala","penguin","giraffe","parrot","whale","sheep","swan","arctic fox","border collie","hamster","dolphin", "wolf","cockatoo","kangaroo","pitbull","british shorthair","rabbit","horse",

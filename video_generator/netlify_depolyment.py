@@ -67,21 +67,6 @@ def deploy_videos():
         print("❌ Erreur pendant le déploiement Netlify.")
         return
 
-    # 4️⃣ Écrire les URLs des vidéos dans le CSV
-    #    Format : une URL par ligne
-    CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-    # On ouvre en mode append pour ajouter sans effacer l'existant
-    with open(CSV_PATH, mode="a", newline="", encoding="utf-8") as csvfile:
-        writer = csv.writer(csvfile)
-
-        for src in mp4_files:
-            # On encode le nom de fichier pour une URL correcte (accents, espaces, etc.)
-            encoded_name = quote(src.name)
-            url = f"{BASE_URL}/{encoded_name}"
-            print(f"Ajout dans le CSV : {url}")
-            writer.writerow([url])
-
     # 5️⃣ Déplacer les vidéos sources vers le dossier d'archive
     for src in mp4_files:
         dest = ARCHIVE / src.name

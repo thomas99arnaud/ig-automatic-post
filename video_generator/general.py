@@ -8,6 +8,9 @@ import pexel_pull_videos
 import pull_openai_text
 import utils
 import get_audio_timings
+import generate_caption
+# URL de base de ton site Netlify
+BASE_URL = "https://social-deployment.netlify.app"
 
 def lanceur(SUJET, langues, NOMBRE_DE_VIDEOS):
     i = 1
@@ -46,6 +49,11 @@ def lanceur(SUJET, langues, NOMBRE_DE_VIDEOS):
             script_text,
             sentence_timings=timings,
         )
+        
+
+        # Génération de la caption et écriture dans le csv
+        caption = generate_caption.generate_caption(SUJET, langue)
+        utils.maj_csv(id=f"{SUJET}_{langue}", video_url=f"{BASE_URL}/{SUJET}_{langue}.mp4",caption=caption)
         print(f"Réél {i}/{len(langues)} terminé ({langue}) ✅")
         i+=1
         # Partie 6 - Suppression des dossiers temporaires
