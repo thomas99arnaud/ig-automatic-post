@@ -1,4 +1,5 @@
 import general
+import netlify_depolyment
 
 SUJET = "squirrel"
 NOMBRE_DE_VIDEOS = 7
@@ -11,3 +12,4 @@ SUJETS = ["koala","penguin","giraffe","parrot","whale","sheep","swan","arctic fo
     "wallaby","otter","chihuahua","eagle","reindeer"]
 
 general.lanceur(SUJET, langues, NOMBRE_DE_VIDEOS)
+netlify_depolyment.deploy_videos()
