@@ -12,16 +12,16 @@ import get_audio_timings
 def lanceur(SUJET, langues, NOMBRE_DE_VIDEOS):
     i = 1
     for langue in langues :
-        #script_text = pull_openai_text.generate_animal_script(SUJET, langue)
-        script_text ='''Écoute-moi bien, les écureuils ne sont pas là pour jouer !  
-        # Ils peuvent mémoriser des milliers d’emplacements de glands.
-        # Ils enterrent leur nourriture avec une précision chirurgicale, sans GPS, naturellement.
-        # Ils couvrent jusqu’à 3 kilomètres par jour pour survivre, bouge-toi un peu !
-        # Si tu crois que c’est juste un rongeur mignon, tu sous-estimes l’armée la plus organisée de la forêt.
-        # Réveille-toi : ces petites bêtes gèrent leur survie mieux que toi ta vie.'''
+        script_text = pull_openai_text.generate_animal_script(SUJET, langue)
+        # script_text ='''Écoute-moi bien, les écureuils ne sont pas là pour jouer !  
+        # # Ils peuvent mémoriser des milliers d’emplacements de glands.
+        # # Ils enterrent leur nourriture avec une précision chirurgicale, sans GPS, naturellement.
+        # # Ils couvrent jusqu’à 3 kilomètres par jour pour survivre, bouge-toi un peu !
+        # # Si tu crois que c’est juste un rongeur mignon, tu sous-estimes l’armée la plus organisée de la forêt.
+        # # Réveille-toi : ces petites bêtes gèrent leur survie mieux que toi ta vie.'''
         
-        #audio_path = pull_openai_text.text_to_speech(SUJET, langue, script_text)
-        audio_path = path.VOICEOVER_PATH / f"{SUJET}_{langue}.mp3"
+        audio_path = pull_openai_text.text_to_speech(SUJET, langue, script_text)
+        #audio_path = path.VOICEOVER_PATH / f"{SUJET}_{langue}.mp3"
 
         audio = MP3(audio_path)
         duration_seconds = audio.info.length

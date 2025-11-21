@@ -1,9 +1,9 @@
 import general
 import netlify_depolyment
 
-SUJET = "squirrel"
+SUJET = "cat"
 NOMBRE_DE_VIDEOS = 7
-langues = ["français", "anglais", "espagnol", "portugais"]
+langues = ["francais", "anglais", "espagnol", "portugais"]
 SUJETS = ["koala","penguin","giraffe","parrot","whale","sheep","swan","arctic fox","border collie","hamster","dolphin", "wolf","cockatoo","kangaroo","pitbull","british shorthair","rabbit","horse",
     "capuchin monkey","iguana","maine coon","lion","hedgehog","chimpanzee","scottish fold","boxer dog","cow","goat","chameleon","seal","panda","penguin","gecko","pug",
     "persian cat","corgi","donkey","red panda","deer","leopard","dalmatian","hummingbird","huskies","golden retriever","rottweiler","goose","chipmunk","squirrel","zebra","siamese cat","tortoise",
