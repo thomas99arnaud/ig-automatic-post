@@ -6,7 +6,7 @@ import path
 # Assure-toi d'avoir défini OPENAI_API_KEY dans tes variables d'environnement
 client = OpenAI()
 
-def generate_animal_script(animal: str) -> str:
+def generate_animal_script(animal: str, langue) -> str:
     """
     Génère un mini script pour ton reel :
     hook + fait intéressant + petite conclusion.
@@ -26,7 +26,7 @@ def generate_animal_script(animal: str) -> str:
     3) Une mini conclusion qui frappe fort.
 
     Contraintes :
-    - En français
+    - En {langue}
     - 1 seule phrase par ligne
     - Pas d’émoticônes
     - Pas de politesses
@@ -52,12 +52,12 @@ def generate_animal_script(animal: str) -> str:
     print("Script généré✅")
     return text.strip()
 
-def text_to_speech(SUJET, text: str):
+def text_to_speech(SUJET, langue, text: str):
     """
     Transforme un texte en fichier audio (voix off).
     """
 
-    out_path = path.VOICEOVER_PATH / f"{SUJET}.mp3"
+    out_path = path.VOICEOVER_PATH / f"{SUJET}_{langue}.mp3"
     with open(out_path, "wb") as f:
         result = client.audio.speech.create(
             model="gpt-4o-mini-tts",  # modèle TTS
@@ -68,14 +68,3 @@ def text_to_speech(SUJET, text: str):
         f.write(result.read())
     print("Audio généré ✅")
     return out_path
-
-if __name__ == "__main__":
-    # 1. Générer un script
-    script_text = generate_animal_script("un chat")
-    print("Script généré :")
-    print(script_text)
-    print("-" * 40)
-
-    # 2. Générer la voix off
-    audio_path = text_to_speech("un chat", script_text)
-    print("Audio généré :", audio_path)

@@ -94,47 +94,65 @@ def render_sentence_image(
 
 def add_subtitles_colorful_animated(
     SUJET: str,
-    text: str,        # tu peux même le virer si tu ne l'utilises plus
-    sentence_timings, # liste: [(sentence, start, end), ...]
+    langue,
+    text: str,
+    sentence_timings,  # liste: [(sentence, start, end), ...]
 ):
+    video_path = path.TEMPORARY_VIDEOS_PATH / f"{SUJET}_{langue}_full.mp4"
 
-    video_path = path.TEMPORARY_VIDEOS_PATH / f"{SUJET}_full.mp4"
-    video = VideoFileClip(video_path)
-
+    video = VideoFileClip(str(video_path))
     clips = []
+    text_clips = []  # pour les fermer après
 
-    colors = ["#FFD60A", "#FF6B6B", "#4ECDC4", "#A66CFF", "#00B4D8"]
+    try:
+        colors = ["#FFD60A", "#FF6B6B", "#4ECDC4", "#A66CFF", "#00B4D8"]
 
-    top_y = int(video.h * 0.20)
-    max_text_width = int(video.w * 0.8)
+        top_y = int(video.h * 0.20)
+        max_text_width = int(video.w * 0.8)
 
-    for i, (sentence, start, end) in enumerate(sentence_timings):
-        text_color_hex = colors[i % len(colors)]
+        for i, (sentence, start, end) in enumerate(sentence_timings):
+            text_color_hex = colors[i % len(colors)]
 
-        img_array = render_sentence_image(
-            sentence,
-            text_color_hex=text_color_hex,
-            max_width_px=max_text_width,
-            font_size=52,
-            pad_x=24,
-            pad_y=20,
-        )
+            img_array = render_sentence_image(
+                sentence,
+                text_color_hex=text_color_hex,
+                max_width_px=max_text_width,
+                font_size=52,
+                pad_x=24,
+                pad_y=20,
+            )
 
-        txt_clip = (
-            ImageClip(img_array)
-            .with_start(start)
-            .with_end(end)
-            .with_position(("center", top_y))
-        )
+            txt_clip = (
+                ImageClip(img_array)
+                .with_start(start)
+                .with_end(end)
+                .with_position(("center", top_y))
+            )
 
-        clips.append(txt_clip)
+            clips.append(txt_clip)
+            text_clips.append(txt_clip)
 
-    final = CompositeVideoClip([video, *clips])
-    out_path = path.VIDEOS_EDITED_PATH / f"{SUJET}.mp4"
-    final.write_videofile(out_path, codec="libx264", audio_codec="aac")
+        final = CompositeVideoClip([video, *clips])
+        out_path = path.VIDEOS_EDITED_PATH / f"{SUJET}_{langue}.mp4"
+        final.write_videofile(out_path, codec="libx264", audio_codec="aac")
+        final.close()
 
-    print("Vidéo avec le son et les sous titres synchronisés (Whisper) ✅")
-    return out_path
+        print("Vidéo avec le son et les sous titres synchronisés (Whisper) ✅")
+        return out_path
+
+    finally:
+        # fermer tous les clips de texte
+        for c in text_clips:
+            try:
+                c.close()
+            except:
+                pass
+
+        # fermer la vidéo source
+        try:
+            video.close()
+        except:
+            pass
 
 
 

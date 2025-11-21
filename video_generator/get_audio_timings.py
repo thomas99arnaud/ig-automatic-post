@@ -3,18 +3,25 @@ import re
 
 client = OpenAI()
 
-from openai import OpenAI
+def get_timings_from_audio(audio_path, langue):
+    if langue == "français" :
+        language = "fr"
+    elif langue == "anglais" :
+        language = "en"
+    elif langue == "espagnol" :
+        language = "es"
+    elif langue == "portugais" :
+        language = "pt"
+    else : 
+        language = None
 
-client = OpenAI()
-
-def get_timings_from_audio(audio_path):
     with open(audio_path, "rb") as f:
         tr = client.audio.transcriptions.create(
             model="whisper-1",
             file=f,
             response_format="verbose_json",
             timestamp_granularities=["segment"],
-            language="fr",
+            language=language,
         )
 
     segments = tr.segments  # objets TranscriptionSegment
