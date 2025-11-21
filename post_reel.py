@@ -1,7 +1,7 @@
 import requests
 import time
 import csv
-from config import ACCESS_TOKEN, IG_USER_ID, CSV_PATH
+from config import ACCESS_TOKEN, IG_USER_ID
 
 def load_reels(csv_path):
     with open(csv_path, newline="", encoding="utf-8") as f:
@@ -9,19 +9,29 @@ def load_reels(csv_path):
         rows = list(reader)
     return rows
 
-def drop_first_reel_line(csv_path: str) -> None:
-    with open(csv_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+import csv
 
-    if len(lines) <= 2:
+def drop_first_reel_line(csv_path: str):
+    rows = []
 
-        new_lines = lines[:1]  # juste la première ligne (header)
-    else:
+    # Lire le CSV correctement (gère les multilignes)
+    with open(csv_path, "r", encoding="utf-8", newline="") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            rows.append(row)
 
-        new_lines = [lines[0]] + lines[2:]
+    # Si seulement header → rien à supprimer
+    if len(rows) <= 1:
+        return
 
+    # Supprimer la 1ère entrée après le header
+    new_rows = [rows[0]] + rows[1+1:]  # saute la ligne 1
+
+    # Écrire proprement
     with open(csv_path, "w", encoding="utf-8", newline="") as f:
-        f.writelines(new_lines)
+        writer = csv.writer(f)
+        writer.writerows(new_rows)
+
 
 def create_reel_container(video_url, caption):
     url = f"https://graph.facebook.com/v21.0/{IG_USER_ID}/media"
@@ -53,8 +63,12 @@ def publish_reel(creation_id):
     r.raise_for_status()
     return r.json()
 
-if __name__ == "__main__":
-    reels = load_reels(CSV_PATH)
+
+def post_intagram(langue) :   
+
+    csv_path=f"./pipeline_csv/reels_{langue}.csv"
+
+    reels = load_reels(csv_path)
     if not reels:
         print("Aucun reel à poster.")
         exit(0)
@@ -74,5 +88,5 @@ if __name__ == "__main__":
     result = publish_reel(creation_id)
     print("Résultat final :", result)
 
-    drop_first_reel_line("reels.csv")
+    drop_first_reel_line(csv_path)
     print("Ligne supprimée du CSV.")

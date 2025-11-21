@@ -1,5 +1,5 @@
 config.py
-reels.csv
+*.csv
 __pycache__
 *.mp3
 *.mp4

@@ -53,7 +53,7 @@ def lanceur(SUJET, langues, NOMBRE_DE_VIDEOS):
 
         # Génération de la caption et écriture dans le csv
         caption = generate_caption.generate_caption(SUJET, langue)
-        utils.maj_csv(id=f"{SUJET}_{langue}", video_url=f"{BASE_URL}/{SUJET}_{langue}.mp4",caption=caption)
+        utils.maj_csv(langue, id=f"{SUJET}_{langue}", video_url=f"{BASE_URL}/{SUJET}_{langue}.mp4",caption=caption)
         print(f"Réél {i}/{len(langues)} terminé ({langue}) ✅")
         i+=1
         # Partie 6 - Suppression des dossiers temporaires

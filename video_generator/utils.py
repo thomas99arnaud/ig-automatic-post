@@ -3,17 +3,15 @@ import shutil
 import path
 import csv
 from pathlib import Path
-# Chemin vers le CSV (relatif au fichier actuel : ./../reels.csv)
-CSV_PATH = (Path(__file__).resolve().parent / "../reels.csv").resolve()
 
 
-def maj_csv(id=None, video_url=None, caption=None):
+def maj_csv(langue, id=None, video_url=None, caption=None):
     """
     - Si seul 'id' est fourni → ajoute une nouvelle ligne avec cet ID.
     - Si 'id' + 'video_url' → met à jour seulement l'URL.
     - Si 'id' + 'caption' → met à jour seulement la caption.
     """
-    csv_path = CSV_PATH
+    csv_path = (Path(__file__).resolve().parent / f"../pipeline_csv/reels_{langue}.csv").resolve()
     if id is None:
         raise ValueError("Un 'id' est obligatoire pour ajouter ou modifier une ligne.")
 
