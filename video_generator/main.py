@@ -2,8 +2,10 @@ import general
 import netlify_depolyment
 
 SUJET = "dog"
-NOMBRE_DE_VIDEOS = 7
-langues = ["francais", "anglais", "espagnol", "portugais"]
+NOMBRE_DE_VIDEOS = 10
+#langues = ["francais", "anglais", "espagnol", "portugais"]
+langues = ["francais"]
+
 SUJETS = ["koala","penguin","giraffe","parrot","whale","sheep","swan","arctic fox","border collie","hamster","dolphin", "wolf","cockatoo","kangaroo","pitbull","british shorthair","rabbit","horse",
     "capuchin monkey","iguana","maine coon","lion","hedgehog","chimpanzee","scottish fold","boxer dog","cow","goat","chameleon","seal","panda","penguin","gecko","pug",
     "persian cat","corgi","donkey","red panda","deer","leopard","dalmatian","hummingbird","huskies","golden retriever","rottweiler","goose","chipmunk","squirrel","zebra","siamese cat","tortoise",
@@ -12,4 +14,4 @@ SUJETS = ["koala","penguin","giraffe","parrot","whale","sheep","swan","arctic fo
     "wallaby","otter","chihuahua","eagle","reindeer"]
 
 general.lanceur(SUJET, langues, NOMBRE_DE_VIDEOS)
-netlify_depolyment.deploy_videos()
+#netlify_depolyment.deploy_videos()
