@@ -10,14 +10,17 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 
+import paths
 # ---------------------------------------------------------------------
 # CONFIG YOUTUBE
 # ---------------------------------------------------------------------
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-CLIENT_SECRETS_FILE = "./oauth/client_secret_1.json"
-DEFAULT_TOKEN_FILE = "./oauth/youtube_token.json"
-
+CLIENT_SECRETS_FILE = paths.VP_YT_OAUTH / "client_secret_1.json"
+TOKEN_FR = paths.VP_YT_OAUTH / "youtube_token_fr.json"
+TOKEN_ES = paths.VP_YT_OAUTH / "youtube_token_es.json"
+TOKEN_PT = paths.VP_YT_OAUTH / "youtube_token_pt.json"
+TOKEN_EN = paths.VP_YT_OAUTH / "youtube_token_en.json"
 
 # ---------------------------------------------------------------------
 # FONCTIONS CSV (même logique que ton script Instagram)
@@ -64,7 +67,7 @@ def drop_first_reel_line(csv_path: str):
 # AUTHENTIFICATION YOUTUBE
 # ---------------------------------------------------------------------
 
-def get_authenticated_service(token_file: str = DEFAULT_TOKEN_FILE):
+def get_authenticated_service(token_file):
     """
     Renvoie un client YouTube authentifié pour UNE chaîne.
 
@@ -205,7 +208,7 @@ def download_video_to_temp(video_url: str, reel_id: str) -> str:
 # FONCTION PRINCIPALE (équivalent de post_intagram)
 # ---------------------------------------------------------------------
 
-def post_youtube_from_csv(langue: str, token_file: str = DEFAULT_TOKEN_FILE):
+def post_youtube_from_csv(langue: str):
     """
     Lit le CSV ./pipeline_csv/reels_{langue}.csv
     (format id,video_url,caption)
@@ -216,7 +219,18 @@ def post_youtube_from_csv(langue: str, token_file: str = DEFAULT_TOKEN_FILE):
     4. Supprime la 1ère ligne du CSV
     """
 
-    csv_path = f"./pipeline_csv/{langue}.csv"
+    if langue == "francais":
+        token_file = TOKEN_FR
+    elif langue == "espagnol":
+        token_file = TOKEN_ES
+    elif langue == "portugais":
+        token_file = TOKEN_PT
+    elif langue == "anglais":
+        token_file = TOKEN_EN
+    else:
+        raise ValueError(f"Langue inconnue : '{langue}'. Langues valides : francais, espagnol, portugais, anglais")
+
+    csv_path = paths.PIPELINE_CSV / f"reels_{langue}_youtube.csv"
 
     reels = load_reels(csv_path)
     if not reels:
@@ -232,6 +246,22 @@ def post_youtube_from_csv(langue: str, token_file: str = DEFAULT_TOKEN_FILE):
     # Titre = première ligne du caption (avant le premier retour à la ligne)
     title = caption.splitlines()[0].strip() if caption else reel_id
     description = caption
+
+    # Récupérer les hashtags du caption pour les utiliser comme tags YouTube
+    caption_tags = extract_hashtags_from_caption(caption)
+
+    # Si tu veux, tu peux aussi ajouter des tags fixes par langue :
+    TAGS_BY_LANG = {
+        "francais": ["animaux", "faits d'animaux", "nature", "fr"],
+        "anglais": ["animals", "animal facts", "wildlife", "en"],
+        "espagnol": ["animales", "datos de animales", "vida salvaje", "es"],
+        "portugais": ["animais", "fatos animais", "vida selvagem", "pt"],
+    }
+
+    lang_tags = TAGS_BY_LANG.get(langue, [])
+
+    # Fusion + dédoublonnage tout en gardant l'ordre
+    tags = list(dict.fromkeys(lang_tags + caption_tags))
 
     # Simple : pas de tags séparés, mais tu peux en dériver plus tard
     tags = []
@@ -264,6 +294,18 @@ def post_youtube_from_csv(langue: str, token_file: str = DEFAULT_TOKEN_FILE):
             os.remove(local_video_path)
             print(f"🧹 Fichier temporaire supprimé : {local_video_path}")
 
+import re
+
+def extract_hashtags_from_caption(caption: str) -> List[str]:
+    """
+    Extrait les hashtags d'un caption sous forme de liste de strings sans le '#'.
+    Ex: 'Hello #cats #catfacts' -> ['cats', 'catfacts']
+    """
+    if not caption:
+        return []
+    # récupère les mots après '#', sans espace
+    return re.findall(r"#([^\s#]+)", caption)
+
 
 # ---------------------------------------------------------------------
 # EXECUTION DIRECTE
@@ -271,4 +313,4 @@ def post_youtube_from_csv(langue: str, token_file: str = DEFAULT_TOKEN_FILE):
 
 if __name__ == "__main__":
     # Exemple : pour ton CSV portugais, si tu l'appelles reels_pt.csv
-    post_youtube_from_csv(langue="reels_portugais", token_file=DEFAULT_TOKEN_FILE)
+    post_youtube_from_csv(langue="portugais")

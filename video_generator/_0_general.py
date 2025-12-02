@@ -2,9 +2,10 @@ from mutagen.mp3 import MP3
 import math
 import paths
 import logs
+import config
 from . import  _10_pull_openai_text, _20_pexel_pull_videos, _30_build_reel, _40_get_audio_timings, _50_ajoute_overlay, _60_generate_caption, _70_utils
 
-def lanceur(SUJET, langues, NOMBRE_DE_VIDEOS):
+def lanceur(SUJET, langues):
     i = 1
     for langue in langues :
         script_text = _10_pull_openai_text.generate_animal_script(SUJET, langue)
@@ -23,9 +24,9 @@ def lanceur(SUJET, langues, NOMBRE_DE_VIDEOS):
         duration_ceil = math.ceil(duration_seconds) + 1 #On choisit de mettre une vidéo qui dure 1 seconde de plus que le speech
 
         # # Partie 2 - Création de la vidéo
-        urls = _20_pexel_pull_videos.pick_video_urls_for_reel(SUJET, n=NOMBRE_DE_VIDEOS)
+        urls = _20_pexel_pull_videos.pick_video_urls_for_reel(SUJET)
         paths = _20_pexel_pull_videos.download_video(urls)
-        reel_path = _20_pexel_pull_videos.create_animal_base_reel(SUJET, paths, duration_ceil ,clip_duration=duration_ceil/NOMBRE_DE_VIDEOS)
+        reel_path = _20_pexel_pull_videos.create_animal_base_reel(SUJET, paths, duration_ceil ,clip_duration=duration_ceil/config.NOMBRE_VIDEOS_PAR_REELS)
 
         # # Partie 3 - Build de la video avec le son
         final_reel = _30_build_reel.add_voiceover_to_reel(SUJET, langue)
@@ -42,9 +43,7 @@ def lanceur(SUJET, langues, NOMBRE_DE_VIDEOS):
             sentence_timings=timings,
         )
         
-
         # Génération de la caption et écriture dans le csv
-        
         caption = _60_generate_caption.generate_caption(SUJET, langue)
         _70_utils.maj_csv(langue, id=f"{SUJET}_{langue}", video_url=f"{logs.NETLIFY_URL}/{SUJET}_{langue}.mp4",caption=caption)
         print(f"Réél {i}/{len(langues)} terminé ({langue}) ✅")

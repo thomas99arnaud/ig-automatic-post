@@ -3,6 +3,7 @@ import random
 import sys
 import paths
 import logs
+import config
 import os
 from typing import List, Dict
 from moviepy import VideoFileClip, concatenate_videoclips
@@ -47,7 +48,8 @@ def get_animal_videos(animal: str, max_results: int = 10) -> List[Dict]:
 
     return results
 
-def pick_video_urls_for_reel(animal: str, n: int = 5):
+def pick_video_urls_for_reel(animal: str):
+    n = config.NOMBRE_VIDEOS_PAR_REELS
     all_videos = get_animal_videos(animal, max_results=20)
     if len(all_videos) < n:
         n = len(all_videos)

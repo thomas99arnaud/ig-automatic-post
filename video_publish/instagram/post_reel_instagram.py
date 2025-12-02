@@ -106,7 +106,7 @@ def publish_reel(creation_id, ig_access_token, ig_user_id):
 
 def post_intagram(langue, ig_access_token, ig_user_id):
 
-    csv_path = f"./pipeline_csv/reels_{langue}.csv"
+    csv_path = f"./pipeline_csv/reels_{langue}_instagram.csv"
 
     reels = load_reels(csv_path)
     if not reels:
