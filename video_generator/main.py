@@ -1,5 +1,4 @@
-import general
-import netlify_depolyment
+from . import _0_general , _80_netlify_depolyment
 
 SUJET = "dog"
 NOMBRE_DE_VIDEOS = 10
@@ -13,5 +12,5 @@ SUJETS = ["koala","penguin","giraffe","parrot","whale","sheep","swan","arctic fo
     "moose","sphynx cat","peacock","bear","red panda","hippopotamus","tortoise","cat","dog","frog","bengal cat","greyhound","dalmatian","seal","hamster","goose",
     "wallaby","otter","chihuahua","eagle","reindeer"]
 
-general.lanceur(SUJET, langues, NOMBRE_DE_VIDEOS)
-#netlify_depolyment.deploy_videos()
+_0_general.lanceur(SUJET, langues, NOMBRE_DE_VIDEOS)
+#_80_netlify_depolyment.deploy_videos()

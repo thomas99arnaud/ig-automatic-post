@@ -1,14 +1,14 @@
 import requests
 import random
 import sys
-import path
-from path import TEMPORARY_VIDEOS_PATH
+import paths
+import logs
 import os
 from typing import List, Dict
 from moviepy import VideoFileClip, concatenate_videoclips
+
 # Ajouter le dossier parent au path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from config import PEXEL_API_KEY
 
 def get_animal_videos(animal: str, max_results: int = 10) -> List[Dict]:
     """
@@ -22,7 +22,7 @@ def get_animal_videos(animal: str, max_results: int = 10) -> List[Dict]:
         "orientation": "portrait",
     }
     headers = {
-        "Authorization": PEXEL_API_KEY
+        "Authorization": logs.PEXEL_API_KEY
     }
 
     response = requests.get(url, params=params, headers=headers)
@@ -55,8 +55,8 @@ def pick_video_urls_for_reel(animal: str, n: int = 5):
     return [c["video_url"] for c in chosen]
 
 def download_video(urls: str):
-    out_dir = path.TEMPORARY_VIDEOS_PATH
-    paths=[]
+    out_dir = paths.VG_T_VIDEOS
+    paths_url=[]
     for url in urls :
         filename = url.split("?")[0].split("/")[-1]  # simple nom de fichier
         filepath = os.path.join(out_dir, filename)
@@ -70,11 +70,11 @@ def download_video(urls: str):
             for chunk in r.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
-        paths.append(filepath)
-    return paths
+        paths_url.append(filepath)
+    return paths_url
 
 def create_animal_base_reel(SUJET, video_paths,  video_duration, clip_duration=2):
-    out_path = TEMPORARY_VIDEOS_PATH/ f"{SUJET}.mp4" 
+    out_path = paths.VG_T_VIDEOS/ f"{SUJET}.mp4" 
 
     clips = []
     original_videos = []   # pour fermer les vidéos originales

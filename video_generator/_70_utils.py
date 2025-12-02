@@ -1,6 +1,6 @@
 import os
 import shutil
-import path
+import paths
 import csv
 from pathlib import Path
 
@@ -71,8 +71,8 @@ def vider_dossier(dossier):
     print(f"[OK] Dossier vidé : {dossier}")
 
 def vider_dossier_temporaires() :
-    #dossiers_temporaires = [path.TEMPORARY_VIDEOS_PATH,path.VOICEOVER_PATH]
-    dossiers_temporaires = [path.TEMPORARY_VIDEOS_PATH]
+    #dossiers_temporaires = [paths.VG_T_VIDEOS,paths.VG_T_VOICEOVER]
+    dossiers_temporaires = [paths.VG_T_VIDEOS]
     for dossier in dossiers_temporaires :
         vider_dossier(dossier)
     print("Dossiers temporaires vidés ✅")

@@ -1,6 +1,6 @@
 import re
 import numpy as np
-import path
+import paths
 from moviepy import VideoFileClip, CompositeVideoClip, ImageClip
 from PIL import Image, ImageDraw, ImageFont
 
@@ -98,7 +98,7 @@ def add_subtitles_colorful_animated(
     text: str,
     sentence_timings,  # liste: [(sentence, start, end), ...]
 ):
-    video_path = path.TEMPORARY_VIDEOS_PATH / f"{SUJET}_{langue}_full.mp4"
+    video_path = paths.VG_T_VIDEOS / f"{SUJET}_{langue}_full.mp4"
 
     video = VideoFileClip(str(video_path))
     clips = []
@@ -133,7 +133,7 @@ def add_subtitles_colorful_animated(
             text_clips.append(txt_clip)
 
         final = CompositeVideoClip([video, *clips])
-        out_path = path.VIDEOS_EDITED_PATH / f"{SUJET}_{langue}.mp4"
+        out_path = paths.VG_VIDEOS_EDITED / f"{SUJET}_{langue}.mp4"
         final.write_videofile(out_path, codec="libx264", audio_codec="aac")
         final.close()
 

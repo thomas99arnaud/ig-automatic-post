@@ -3,28 +3,23 @@ from pathlib import Path
 import shutil
 import csv
 from urllib.parse import quote
+import paths
+import logs
 
-import path
-
-# 🔁 CHEMINS IMPORTÉS DE TON FICHIER path.py
 # Dossier où tes nouvelles vidéos arrivent
-INBOX = path.VIDEOS_EDITED_PATH
+INBOX = paths.VG_VIDEOS_EDITED
 
 # Dossier lié à Netlify (celui que tu as déclaré comme base directory = deployment_folder)
-DEPLOY_DIR = path.DEPLOYMENT_FOLDER
+DEPLOY_DIR = paths.VG_DEPLOYMENTFOLDER
 
 # Dossier d’archive pour les vidéos déjà envoyées
-ARCHIVE = path.ARCHIVE_FOLDER
+ARCHIVE = paths.ARCHIVES_VIDEOS
 
 # Chemin complet vers la commande Netlify sur Windows
-NETLIFY_CMD = r"C:\Users\totor\AppData\Roaming\npm\netlify.cmd"
+NETLIFY_CMD = logs.NETLIFY_CMD
 
 # URL de base de ton site Netlify
-BASE_URL = "https://social-deployment.netlify.app"
-
-# Chemin vers le CSV (relatif au fichier actuel : ./../reels.csv)
-CSV_PATH = (Path(__file__).resolve().parent / "../reels.csv").resolve()
-
+BASE_URL = logs.NETLIFY_URL
 
 def deploy_videos():
     # 1️⃣ Récupérer la liste des vidéos à envoyer

@@ -1,4 +1,6 @@
-config.py
+logs*.py
+config*.py
+*.json
 *.csv
 __pycache__
 *.mp3

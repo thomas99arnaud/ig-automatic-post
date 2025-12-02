@@ -1,7 +1,7 @@
 import os
 from openai import OpenAI
 
-import path  # ton module local avec VOICEOVER_PATH
+import paths
 
 # Assure-toi d'avoir défini OPENAI_API_KEY dans tes variables d'environnement
 client = OpenAI()
@@ -83,7 +83,7 @@ def text_to_speech(SUJET: str, langue: str, text: str):
     """
     Transforme un texte en fichier audio (voix off).
     """
-    out_path = path.VOICEOVER_PATH / f"{SUJET}_{langue}.mp3"
+    out_path = paths.VG_T_VOICEOVER / f"{SUJET}_{langue}.mp3"
 
     with open(out_path, "wb") as f:
         result = client.audio.speech.create(
