@@ -72,4 +72,24 @@ def deploy_videos():
 
 
 if __name__ == "__main__":
-    deploy_videos()
+    #deploy_videos()
+    cmd = [
+        NETLIFY_CMD,
+        "deploy",
+        "--prod",
+        "--dir", str(DEPLOY_DIR),
+        "--no-build",  # 👈 pas de phase de build
+        "--message", "Sync videos from Python script",
+    ]
+
+    # On lance la commande dans le dossier du script (lié au projet Netlify)
+    result = subprocess.run(
+        cmd,
+        shell=False,
+        cwd=Path(__file__).resolve().parent
+    )
+
+    print("Code retour Netlify :", result.returncode)
+
+    if result.returncode != 0:
+        print("❌ Erreur pendant le déploiement Netlify.")
